@@ -360,3 +360,50 @@ Hit any key to stop autoboot:
 interrupt it and follow the main flashing procedure.
 
 This permanently removes the broken Linksys boot logic and restores a clean boot path.
+
+Next trouble shoot issue:- 
+⚠️ Troubleshooting: Router Freezes After Flashing (Solid Power LED)
+After running:
+-----
+Code
+nand write …
+reset
+the router may:
+
+show a solid bright power LED
+
+produce no serial output
+
+not reboot
+
+appear “on but dead”
+
+This is normal for the E4200v2/EA4500.
+
+✔ Cause
+The reset command in U‑Boot performs a soft reset, which does not reinitialize:
+
+DRAM
+
+NAND controller
+
+PCIe
+
+UART
+
+Boot ROM
+
+The router cannot start the newly flashed firmware until it performs a cold power cycle.
+
+✔ Solution
+Unplug power
+
+Wait 5–10 seconds
+
+Plug power back in
+
+On the next boot, the router will correctly load the new OpenWrt firmware and show:
+
+Code
+Starting kernel ...
+Hopefully!
