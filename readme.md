@@ -253,3 +253,107 @@ Code
 Starting kernel ...
 [    0.000000] Linux version 6.x.x ...
 And the router will boot normally.
+
+
+🔍 Symptoms
+Power LED turns solid immediately
+
+No flashing sequence
+
+No Ethernet link activity
+
+No serial output whatsoever
+
+Pressing keys does nothing
+
+Router appears “on” but completely unresponsive
+
+This is the classic “lights are on but nobody’s home” state.
+
+🧠 Why This Happens
+The E4200v2 has a fragile bootloader handoff.
+If the NAND contains a corrupted or partially erased firmware region, the boot ROM may:
+
+hang before launching U‑Boot
+
+fail to initialize DRAM
+
+fail to initialize the UART
+
+appear powered but dead
+
+This is why you cannot interrupt U‑Boot — U‑Boot never started.
+
+This is not a dual‑partition issue.
+This is a pre‑U‑Boot stall.
+
+🔧 How to Recover From This State
+✔ 1. Power‑cycle and watch the serial line from the very first millisecond
+Connect your serial adapter before powering the router.
+
+Open your terminal.
+Then plug in power.
+
+If you see anything like:
+
+Code
+BootROM 1.08
+or
+
+Code
+U-Boot 1.1.4 (Viper)
+— you’re alive.
+
+If you see nothing, continue below.
+
+✔ 2. Try a “cold start”
+Unplug everything:
+
+Power
+
+Ethernet
+
+USB
+
+Serial adapter
+
+Wait 10 seconds.
+
+Reconnect serial first, then power.
+
+Sometimes the boot ROM only initializes UART on a cold start.
+
+✔ 3. Try powering from a different PSU
+These routers are extremely picky about voltage sag.
+
+A weak PSU can cause:
+
+DRAM init failure
+
+UART not being enabled
+
+Boot ROM hang
+
+Use a 12V 1.5A or 2A supply.
+
+✔ 4. If serial still shows nothing → the NAND boot region is corrupted
+This is the scenario where the router cannot reach U‑Boot.
+
+At this point, recovery requires:
+
+JTAG, or
+
+Replacing / reprogramming the NAND chip, or
+
+Using a pre‑flashed U‑Boot SPI chip (rare mod)
+
+Fortunately, in your case, the router did eventually boot U‑Boot — meaning the boot ROM was intact and UART was alive.
+
+✔ 5. Once U‑Boot appears even once → immediately flash OpenWrt
+As soon as you get:
+
+Code
+Hit any key to stop autoboot:
+interrupt it and follow the main flashing procedure.
+
+This permanently removes the broken Linksys boot logic and restores a clean boot path.
