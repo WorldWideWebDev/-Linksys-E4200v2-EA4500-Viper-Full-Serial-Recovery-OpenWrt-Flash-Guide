@@ -1,0 +1,73 @@
+⚡ Quick Recovery Cheat Sheet
+Linksys E4200v2 / EA4500 (Viper) – Fast Serial Flash Procedure
+This is the minimal, fastest possible sequence to bring a soft‑bricked E4200v2/EA4500 back to life and booting OpenWrt.
+
+🔌 1. Connect Serial
+115200 baud, 8N1
+
+Pins: GND – TX – RX (3.3V logic)
+
+Open terminal before powering the router
+
+🟢 2. Power On & Interrupt U‑Boot
+You must see:
+
+Code
+Hit any key to stop autoboot:
+Press any key → get:
+
+Code
+Viper>>
+If no serial output → cold boot again (unplug → wait → plug in).
+If still nothing → see Troubleshooting Appendix.
+
+🌐 3. Set TFTP Environment
+Code
+setenv ipaddr 192.168.1.10
+setenv serverip 192.168.1.2
+PC must be 192.168.1.2 with TFTP running.
+
+📥 4. Load Firmware Into RAM
+Code
+tftpboot 0x800000 ea4500.bin
+Note the hex size at the end, e.g.:
+
+Code
+Bytes transferred = 8912896 (880000 hex)
+🧹 5. Erase Firmware Region
+Code
+nand erase 0x200000 0x1e00000
+💾 6. Write Firmware to NAND
+Use the size from the TFTP output:
+
+Code
+nand write 0x800000 0x200000 0x880000
+🔄 7. DO NOT TRUST reset — Power Cycle Instead
+Typing:
+
+Code
+reset
+will freeze the router (solid LED, no boot).
+This is normal.
+
+Correct action:
+Unplug power
+
+Wait 5–10 seconds
+
+Plug power back in
+
+🚀 8. Router Boots Into OpenWrt
+You should now see:
+
+Code
+Starting kernel ...
+Default access:
+
+IP: 192.168.1.1
+
+User: root
+
+Password: (none)
+
+🟩 Done — Recovery Successful
