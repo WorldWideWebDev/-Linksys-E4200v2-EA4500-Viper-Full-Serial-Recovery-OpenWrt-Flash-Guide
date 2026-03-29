@@ -288,6 +288,9 @@ This is not a dual‑partition issue.
 This is a pre‑U‑Boot stall.
 
 🔧 How to Recover From This State
+-----
+Persistence wins, it may seem futile ! The light turns on bright every time !, Wait! Get a coffee , come back tomorrow!, turn it on again, Hit the keyboard keys! These routers play up, but if you persist , it will happen. Pantene, It may not happen overnight, but it will happen. Been there done that , and it works.
+----
 ✔ 1. Power‑cycle and watch the serial line from the very first millisecond
 Connect your serial adapter before powering the router.
 
