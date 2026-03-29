@@ -168,3 +168,88 @@ U‑Boot interrupt timing
 TFTP wiring
 
 Successful OpenWrt boot screenshots
+
+🛠️ Troubleshooting Appendix
+When the E4200v2 boots into the “dead” partition and appears bricked
+The Linksys E4200v2 / EA4500 contains only one real firmware partition, but the stock firmware simulates a “dual‑boot” system using boot counters and alternate boot commands.
+
+When the router attempts to boot into the wrong boot command (the fake second partition), you will see:
+
+Power LED turns on
+
+Ethernet LEDs may blink
+
+No serial output after U‑Boot
+
+No web UI
+
+No ping
+
+Router appears “on but empty” — nobody’s home
+
+This is normal behavior for a soft‑brick on this model.
+
+Below are the steps to recover from this state.
+
+🔧 1. Interrupt U‑Boot Immediately
+Power on the router and spam any key in your serial terminal.
+You must interrupt U‑Boot before it attempts to boot the dead image.
+
+If successful, you will see:
+
+Code
+Hit any key to stop autoboot:
+Viper>>
+If you miss the timing, power‑cycle and try again.
+
+🔁 2. Reset Boot Variables (Optional but Recommended)
+If the router keeps trying to boot the wrong image, reset the environment:
+
+Code
+env default -a
+saveenv
+This clears any leftover Linksys boot counters or fallback logic.
+
+📦 3. Proceed With the Flash Procedure
+Once you are at the Viper>> prompt, follow the main guide:
+
+tftpboot
+
+nand erase
+
+nand write
+
+reset
+
+This overwrites the corrupted firmware region and restores a clean OpenWrt installation.
+
+🧠 Why This Happens
+The stock firmware uses:
+
+a boot counter
+
+a fallback boot command
+
+a fake “second partition” entry
+
+…but both entries point to the same NAND region.
+
+When the fallback entry becomes corrupted, the router boots into a non‑existent image, resulting in:
+
+LEDs on
+
+CPU running
+
+but no kernel
+
+This is why the router appears powered but dead.
+
+OpenWrt removes this mechanism entirely, so once flashed, the issue never returns.
+
+🟢 Successful Recovery Indicators
+After flashing OpenWrt, you should see:
+
+Code
+Starting kernel ...
+[    0.000000] Linux version 6.x.x ...
+And the router will boot normally.
