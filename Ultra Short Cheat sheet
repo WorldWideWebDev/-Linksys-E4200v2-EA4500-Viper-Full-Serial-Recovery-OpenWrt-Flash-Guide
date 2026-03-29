@@ -1,0 +1,48 @@
+🟩 Ultra‑Minimal Recovery Cheat Sheet 
+Linksys E4200v2 / EA4500 (Viper)
+Code
+=================  E4200v2 / EA4500 QUICK RECOVERY  =================
+
+1. SERIAL SETUP
+   - 115200 8N1, 3.3V logic
+   - Connect GND – TX – RX
+   - Open terminal BEFORE powering router
+
+2. ENTER U-BOOT
+   - Power on
+   - Interrupt at: "Hit any key to stop autoboot:"
+   - Prompt: Viper>>
+
+3. SET TFTP
+   setenv ipaddr 192.168.1.10
+   setenv serverip 192.168.1.2
+
+4. LOAD FIRMWARE TO RAM
+   tftpboot 0x800000 ea4500.bin
+   (Note hex size, e.g. 0x880000)
+
+5. ERASE NAND
+   nand erase 0x200000 0x1e00000
+
+6. WRITE FIRMWARE
+   nand write 0x800000 0x200000 <hex_size>
+
+7. IMPORTANT: (DO NOT USE "reset") Or (Use Reset) 
+---
+   - Router "May" freeze (solid LED) — this is normal in some cases, which makes it abnormal in others.
+I have carried ou this procedure more than once, and in some cases the rest works from within Putty
+and in other cases it does not and the router hangs. I cannot definitely state why, however i have overcome the issue by just simply unplugging the router
+and plugging it back in after approx 10 seconds or so, who's counting maybe it was 20. Upon restart it ran normally,
+Luci was accessable at 192.168.1.1 and putty showed all the correct codes on the screen. 
+---
+
+8. HARD POWER CYCLE
+   - Unplug power
+   - Wait 5–10 seconds
+   - Plug back in
+
+9. SUCCESSFUL BOOT
+   - Look for: "Starting kernel ..."
+   - OpenWrt at 192.168.1.1 (root / no password)
+
+=====================================================================
